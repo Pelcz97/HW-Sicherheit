@@ -1,0 +1,53 @@
+
+icetime topological timing analysis report
+==========================================
+
+Info: max_span_hack is enabled: estimate is conservative.
+
+Report for critical path:
+-------------------------
+
+        lc40_18_16_5 (LogicCell40) [clk] -> lcout: 0.640 ns
+     0.640 ns net_70593 (uart_inst.rxctr[5])
+        t568 (LocalMux) I -> O: 0.330 ns
+        inmux_18_16_74718_74774 (InMux) I -> O: 0.260 ns
+        lc40_18_16_6 (LogicCell40) in0 -> lcout: 0.449 ns
+     1.678 ns net_70594 ($abc$2587$n172)
+        t570 (LocalMux) I -> O: 0.330 ns
+        inmux_18_17_74834_74873 (InMux) I -> O: 0.260 ns
+        lc40_18_17_2 (LogicCell40) in0 -> lcout: 0.449 ns
+     2.716 ns net_70713 ($abc$2587$n209)
+        odrv_18_17_70713_62694 (Odrv4) I -> O: 0.372 ns
+        t583 (Span4Mux_v4) I -> O: 0.372 ns
+        t582 (Span4Mux_v4) I -> O: 0.372 ns
+        t581 (LocalMux) I -> O: 0.330 ns
+        inmux_15_25_63584_63660 (InMux) I -> O: 0.260 ns
+        t68 (CascadeMux) I -> O: 0.000 ns
+        lc40_15_25_7 (LogicCell40) in2 -> lcout: 0.379 ns
+     4.799 ns net_59472 ($abc$2587$n174)
+        t440 (LocalMux) I -> O: 0.330 ns
+        inmux_16_24_67559_67613 (InMux) I -> O: 0.260 ns
+        t96 (CascadeMux) I -> O: 0.000 ns
+        lc40_16_24_7 (LogicCell40) in2 -> lcout: 0.379 ns
+     5.767 ns net_63426 ($abc$2587$n173)
+        odrv_16_24_63426_59485 (Odrv4) I -> O: 0.372 ns
+        t517 (Span4Mux_v4) I -> O: 0.372 ns
+        t516 (Span4Mux_v4) I -> O: 0.372 ns
+        t515 (Span4Mux_h4) I -> O: 0.316 ns
+        t514 (LocalMux) I -> O: 0.330 ns
+        inmux_18_16_74714_74750 (InMux) I -> O: 0.260 ns
+     7.787 ns net_74750 ($abc$2587$n173)
+        lc40_18_16_2 (LogicCell40) in0 [setup]: 0.400 ns
+     8.187 ns net_70590 (uart_inst.rxctr[6])
+
+Resolvable net names on path:
+     0.640 ns ..  1.229 ns uart_inst.rxctr[5]
+     1.678 ns ..  2.267 ns $abc$2587$n172
+     2.716 ns ..  4.420 ns $abc$2587$n209
+     4.799 ns ..  5.388 ns $abc$2587$n174
+     5.767 ns ..  7.787 ns $abc$2587$n173
+                  lcout -> uart_inst.rxctr[6]
+
+Total number of logic levels: 5
+Total path delay: 8.19 ns (122.15 MHz)
+

@@ -25,7 +25,7 @@ gui: $(TOPLEVEL).json $(PCF) $(TOPLEVEL).asc
 	$(NEXTPNR) --$(DEVICE) --json $(TOPLEVEL).json --pcf $(PCF) --asc $(TOPLEVEL).asc --pcf-allow-unconstrained --gui
 
 %.bin: %.asc
-	icepack $< $@
+	../modified_icepack_binary/icepack  -n $< $@
 
 %.rpt: %.asc
 	icetime -d $(DEVICE) -mtr $@ $<

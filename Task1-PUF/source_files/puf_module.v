@@ -75,9 +75,9 @@ module puf_module (
       if (rst) begin
         // TODO-BASIC: Initialize/reset the state and other registers
         state <= INIT;
-        i_r <= 'b0000_00000_0000;
-        i_w_r <= 'b00000_00000_000;
-        puf_byte_reg <= 'b0000_0000;
+        i_r <= 'b0;
+        i_w_r <= 'b0;
+        puf_byte_reg <= 'b0;
         
       end else begin
         case (state)
@@ -98,7 +98,7 @@ module puf_module (
                         // wait for the UART to send 's', then transition to the next state
                         // ???
                         if (DATA_FROM_RX == 'h53) begin
-                           state <= ; 
+                           state <= INIT;
                         end
                     end
             WAITCYCLE_FOR_MEMORY :

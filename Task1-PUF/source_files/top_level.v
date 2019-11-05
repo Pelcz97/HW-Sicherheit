@@ -31,6 +31,7 @@ module top_level (
       .errout ( err )
    );
    defparam uart_inst.CLKS_PER_BIT = 104;
+
    
    puf_module puf_module_inst (
         .clk ( CLK ),

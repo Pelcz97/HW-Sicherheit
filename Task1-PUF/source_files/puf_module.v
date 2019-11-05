@@ -89,7 +89,7 @@ module puf_module (
             WAIT_FOR_REQUEST :
                     begin
                         // TODO-SRAM: reset the puf byte index register
-                        puf_byte_reg <= 'b0000_0000;
+                        puf_byte_reg <= 'b0;
                         // INFO: For testing, if you want to write to memory while waiting here,
                         // you can set the index/address here:
                         //i_w_r <= i_w_r+1;
@@ -97,8 +97,8 @@ module puf_module (
                         // TODO-UART:
                         // wait for the UART to send 's', then transition to the next state
                         // ???
-                        if (DATA_FROM_RX == 'h53) begin
-                           state <= INIT;
+                        if (uart_data_from_rx == 'h53) begin
+                           state <= WAITCYCLE_FOR_MEMORY;
                         end
                     end
             WAITCYCLE_FOR_MEMORY :
@@ -109,24 +109,36 @@ module puf_module (
                     begin
                         // TODO-SRAM: change the following to select the correct byte of
                         // the rdata vector, using the LSB of i_r:
-                        // if (???) begin
-                        //puf_byte_reg <= 'hcf;
-                        // end else begin
-                        
+                        if (uart_rx_ready) begin
+                            //FRAGE ask the uebungsleiter if this makes sense!
+                            puf_byte_reg <= r_data[i_r[0]];
+                            state <= UART_SEND;
+                        end else begin
+
+                        end
                         // TODO-UART:
                         // wait for uart to become ready before sending
                         // ???
+                        if (uart_tx_ready) begin
+                            state <= UART_SEND;
+                        end else begin
+                            state <= WAITCYCLE_FOR_MEMORY;
+                        end
                         
                     end
             UART_SEND :
                     begin
                         // most logic happens in combinational part, but we need one thing here..
                         // ???
+                        state <= UART_WAIT_FINISH;
                     end
             UART_WAIT_FINISH :
                     begin
                         // wait for uart transmission to finish and become ready again
                         // ???
+                        if (uart_tx_ready) begin
+                            state <= LOOP_CONDITION;
+                        end
                     end
             LOOP_CONDITION :
                     begin
@@ -134,6 +146,12 @@ module puf_module (
                         // check if we have transmitted the complete SRAM,
                         // and depending on that go back to the start or
                         // increment the read index and continue transmitting
+                        if (i_r == PUF_BYTES) begin
+                            state <= INIT;
+                        end else begin
+                            i_r++;
+                            state <= PUF_READ;
+                        end
                     end
             default :
                     begin
@@ -154,6 +172,8 @@ module puf_module (
         // (until the UART module signals uart_tx_ready = '1' again)
         // TODO-UART: hardwire the puf_byte_reg to the uart tx
         // ???
+        //FRAGE Wie rum muss das hier sein?
+        uart_data_to_tx <= puf_byte_reg;
         
         // TODO-SRAM: set all memory signal defaults/hardwired values
         //  so, also make sure that you are not constantly writing to memory:

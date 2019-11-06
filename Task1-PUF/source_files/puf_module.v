@@ -74,10 +74,12 @@ module puf_module (
    always @ (posedge clk, posedge rst) begin
       if (rst) begin
         // TODO-BASIC: Initialize/reset the state and other registers
-        state <= INIT;
+        //FRAGE Ist das hier alles wirklich parallel?
         i_r <= 'b0;
         i_w_r <= 'b0;
         puf_byte_reg <= 'b0;
+        state <= INIT;
+
         
       end else begin
         case (state)
@@ -93,17 +95,23 @@ module puf_module (
                         // INFO: For testing, if you want to write to memory while waiting here,
                         // you can set the index/address here:
                         //i_w_r <= i_w_r+1;
-                        
                         // TODO-UART:
                         // wait for the UART to send 's', then transition to the next state
                         // ???
-                        if (uart_data_from_rx == 'h53) begin
-                           state <= WAITCYCLE_FOR_MEMORY;
+                        //FRAGE Dieses IF wird nie betreten! WARUM?! -> uart_tx_enable muss erst gesetzt werden! Aber wo soll man es ausschalten?
+                        if (uart_data_from_rx == 'h73) begin
+                            uart_data_to_tx <= 'hff;
+
+                            state <= WAITCYCLE_FOR_MEMORY;
                         end
                     end
+            //FRAGE Wieso wird dieser Case betreten?
             WAITCYCLE_FOR_MEMORY :
                     begin
-                        state <= PUF_READ;
+                    //TODO Kondition prüfen!
+                        if (uart_rx_ready) begin
+                            state <= PUF_READ;
+                        end
                     end
             PUF_READ :
                     begin
@@ -173,7 +181,8 @@ module puf_module (
         // TODO-UART: hardwire the puf_byte_reg to the uart tx
         // ???
         //FRAGE Wie rum muss das hier sein?
-        uart_data_to_tx <= puf_byte_reg;
+
+        //uart_data_to_tx <= puf_byte_reg;
         
         // TODO-SRAM: set all memory signal defaults/hardwired values
         //  so, also make sure that you are not constantly writing to memory:
@@ -186,7 +195,7 @@ module puf_module (
                         // dummy-send to clear usb-serial inputs
                         // this will leave a random byte on the PC side after each
                         // reset, which is already handled in the get_puf_from_device.py script
-                        uart_tx_enable <= 1;
+                        uart_tx_enable <= 'b1;
                     end
             WAIT_FOR_REQUEST :
                     begin

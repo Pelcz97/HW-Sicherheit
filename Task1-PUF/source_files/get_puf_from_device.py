@@ -6,10 +6,15 @@ import serial
 import time
 import serial.tools.list_ports
 
+import datetime
+
 DEV_UART = '/dev/ttyUSB1'
 
+datetime  = datetime.datetime.now().time()
+filename = 'puf_data/' + str(datetime) + 'puf_data.txt'
+
 # write/overwrite puf_data.txt
-puftxt = open('puf_data.txt', 'w');
+puftxt = open(filename, 'w');
 
 # separate memory into how many blocks
 # (in powers of 2)

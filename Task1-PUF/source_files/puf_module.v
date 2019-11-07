@@ -74,7 +74,6 @@ module puf_module (
    always @ (posedge clk, posedge rst) begin
       if (rst) begin
         // TODO-BASIC: Initialize/reset the state and other registers
-        //FRAGE Ist das hier alles wirklich parallel?
         i_r <= 'b0;
         i_w_r <= 'b0;
         puf_byte_reg <= 'b0;
@@ -91,48 +90,37 @@ module puf_module (
             WAIT_FOR_REQUEST :
                     begin
                         // TODO-SRAM: reset the puf byte index register
-                        puf_byte_reg <= 'b0;
+                        i_r <= 'b0;
                         // INFO: For testing, if you want to write to memory while waiting here,
                         // you can set the index/address here:
                         //i_w_r <= i_w_r+1;
                         // TODO-UART:
                         // wait for the UART to send 's', then transition to the next state
                         // ???
-                        //FRAGE Dieses IF wird nie betreten! WARUM?! -> uart_tx_enable muss erst gesetzt werden! Aber wo soll man es ausschalten?
-                        if (uart_data_from_rx == 'h73) begin
-                            uart_data_to_tx <= 'hff;
-
+                        if (uart_rx_ready && uart_data_from_rx == 'h73) begin
                             state <= WAITCYCLE_FOR_MEMORY;
                         end
                     end
-            //FRAGE Wieso wird dieser Case betreten?
             WAITCYCLE_FOR_MEMORY :
                     begin
-                    //TODO Kondition prüfen!
-                        if (uart_rx_ready) begin
-                            state <= PUF_READ;
-                        end
+                        state <= PUF_READ;
                     end
             PUF_READ :
                     begin
                         // TODO-SRAM: change the following to select the correct byte of
                         // the rdata vector, using the LSB of i_r:
-                        if (uart_rx_ready) begin
-                            //FRAGE ask the uebungsleiter if this makes sense!
-                            puf_byte_reg <= r_data[i_r[0]];
-                            state <= UART_SEND;
+                        raddr <= i_r >> 1;
+                        if (i_r[0] == 0) begin
+                            puf_byte_reg <= rdata[7:0];
                         end else begin
-
+                            puf_byte_reg <= rdata[15:8];
                         end
                         // TODO-UART:
                         // wait for uart to become ready before sending
                         // ???
                         if (uart_tx_ready) begin
                             state <= UART_SEND;
-                        end else begin
-                            state <= WAITCYCLE_FOR_MEMORY;
                         end
-                        
                     end
             UART_SEND :
                     begin
@@ -154,7 +142,7 @@ module puf_module (
                         // check if we have transmitted the complete SRAM,
                         // and depending on that go back to the start or
                         // increment the read index and continue transmitting
-                        if (i_r == PUF_BYTES) begin
+                        if (i_r == PUF_BYTES - 1) begin
                             state <= INIT;
                         end else begin
                             i_r++;
@@ -180,9 +168,8 @@ module puf_module (
         // (until the UART module signals uart_tx_ready = '1' again)
         // TODO-UART: hardwire the puf_byte_reg to the uart tx
         // ???
-        //FRAGE Wie rum muss das hier sein?
-
-        //uart_data_to_tx <= puf_byte_reg;
+    
+        uart_data_to_tx <= puf_byte_reg;
         
         // TODO-SRAM: set all memory signal defaults/hardwired values
         //  so, also make sure that you are not constantly writing to memory:
@@ -218,6 +205,7 @@ module puf_module (
             UART_SEND :
                     begin
                         // ???
+                        uart_tx_enable <= 1;
                     end
             UART_WAIT_FINISH :
                     begin

@@ -50,7 +50,6 @@ module puf_module (
       .wmask ( wmask ),
       .waddr ( waddr )
    );
-   
    // Explanation of sequential and combinational always blocks:
    
    // an always@(posedge ..) block defines sequential logic, i.e. logic that reacts on a clock

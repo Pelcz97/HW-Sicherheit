@@ -57,15 +57,15 @@ for i in range(len(filenames)):
         puf_data_bin[i][j] = hexStringToBinString(puf_data[i][j])
     file.close()
 
-#now every line is stored with its HEX-Values in puf_data. It is a 2D Array filled with strings. The "Rows" are the different files and the "Columns" are the different lines. puf_data_bin stores the exact same values as binary int type
 
+#now every line is stored with its HEX-Values in puf_data. It is a 2D Array filled with strings. The "Rows" are the different files and the "Columns" are the different lines. puf_data_bin stores the exact same values as binary string
 uniqueness = 0.0
 avg_uniqueness = 0.0
 
-for k in range(len(filenames)):
-    for i in range(linesPerFile -1):
-        for j in range(i, linesPerFile):
-            uniqueness += HammingDistance(puf_data_bin[k][i],puf_data_bin[k][j])
+for file in range(len(filenames)):
+    for line in range(linesPerFile -1):
+        for otherline in range(i, linesPerFile):
+            uniqueness += HammingDistance(puf_data_bin[file][line],puf_data_bin[file][otherline])
     faktor = 2.0/(linesPerFile * (linesPerFile -1) * n)
     uniqueness *= faktor
     avg_uniqueness += uniqueness
@@ -73,10 +73,10 @@ avg_uniqueness = avg_uniqueness / len(filenames)
 
 reliability = 0.0
 avg_reliabilty = 0.0
-for i in range(linesPerFile):
-    for m in range(len(filenames) - 1):
-        for j in range(m, len(filenames)):
-            reliability += HammingDistance(puf_data_bin[m][i], puf_data_bin[j][i])
+for line in range(linesPerFile):
+    for file in range(len(filenames) - 1):
+        for otherfile in range(file, len(filenames)):
+            reliability += HammingDistance(puf_data_bin[file][line], puf_data_bin[otherfile][line])
     faktor = 1.0 / (len(filenames) * n)
     reliability *= faktor
     avg_reliabilty += reliability

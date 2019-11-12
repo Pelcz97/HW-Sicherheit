@@ -69,7 +69,7 @@ for k in range(len(filenames)):
     faktor = 2.0/(linesPerFile * (linesPerFile -1) * n)
     uniqueness *= faktor
     avg_uniqueness += uniqueness
-avg_uniqueness = avg_uniqueness * 100 / len(filenames)
+avg_uniqueness = avg_uniqueness / len(filenames)
 
 reliability = 0.0
 avg_reliabilty = 0.0
@@ -101,7 +101,7 @@ faktor = 1.0 / (linesPerFile * len(filenames) * n)
 avg_aliasing = aliasing * faktor
 
 
-print('The Average Uniqueness of all files is: ' +  str(avg_uniqueness) + '%')
+print('The Average Uniqueness of all files is: ' +  str(100 * avg_uniqueness) + '%')
 print('The Average Reliability of all files is: ' +  str( 100 * (1 - avg_reliabilty))+ '%')
 print('The Average Uniformity of all files is: ' +  str(100 * avg_uniformity) + '%')
 print('The Average Bit-Aliasing of all files is: ' +  str(100 * avg_aliasing) + '%')

@@ -57,53 +57,55 @@ for i in range(len(filenames)):
         puf_data_bin[i][j] = hexStringToBinString(puf_data[i][j])
     file.close()
 
+print('Reading the files complete! Starting the Calcualations!')
 
 #now every line is stored with its HEX-Values in puf_data. It is a 2D Array filled with strings. The "Rows" are the different files and the "Columns" are the different lines. puf_data_bin stores the exact same values as binary string
 uniqueness = 0.0
 avg_uniqueness = 0.0
-
 for file in range(len(filenames)):
-    for line in range(linesPerFile -1):
-        for otherline in range(i, linesPerFile):
+    for line in range(linesPerFile - 1):
+        for otherline in range(line + 1, linesPerFile):
             uniqueness += HammingDistance(puf_data_bin[file][line],puf_data_bin[file][otherline])
-    faktor = 2.0/(linesPerFile * (linesPerFile -1) * n)
+    faktor = 2.0/(linesPerFile * (linesPerFile - 1) * n)
     uniqueness *= faktor
     avg_uniqueness += uniqueness
 avg_uniqueness = avg_uniqueness / len(filenames)
+
+print('The Average Uniqueness of all files is: ' +  str(100 * avg_uniqueness) + '%')
+
 
 reliability = 0.0
 avg_reliabilty = 0.0
 for line in range(linesPerFile):
     for file in range(len(filenames) - 1):
-        for otherfile in range(file, len(filenames)):
+        for otherfile in range(file + 1, len(filenames)):
             reliability += HammingDistance(puf_data_bin[file][line], puf_data_bin[otherfile][line])
-    faktor = 1.0 / (len(filenames) * n)
+    faktor = 2.0 / (len(filenames) * (len(filenames) - 1) * n)
     reliability *= faktor
     avg_reliabilty += reliability
 avg_reliabilty /= linesPerFile
+
+print('The Average Reliability of all files is: ' +  str( 100 * (1 - avg_reliabilty))+ '%')
     
+
 uniformity = 0.0
 avg_uniformity = 0.0
-
 for file in range(len(filenames)):
     for line in range(linesPerFile):
         avg_uniformity += HammingDistance(puf_data_bin[file][line], '0' * n) / float(n)
 avg_uniformity /= (linesPerFile * (len(filenames)))
 
+print('The Average Uniformity of all files is: ' +  str(100 * avg_uniformity) + '%')
+
 
 aliasing = 0.0
-for line in range(linesPerFile):
+avg_aliasing = 0.0
+for file in range(len(filenames)):
     for bit in range(n):
-        for file in range(len(filenames) - 1):
-            for otherfile in range(file, len(filenames)):
-                aliasing += HammingDistance(puf_data_bin[file][line][bit], puf_data_bin[otherfile][line][bit])
-faktor = 1.0 / (linesPerFile * len(filenames) * n)
-avg_aliasing = aliasing * faktor
+        for line in range(linesPerFile):
+            aliasing += HammingDistance(puf_data_bin[file][line][bit], '0')
+    aliasing /= (linesPerFile * n)
+    avg_aliasing += aliasing
+avg_aliasing /= len(filenames)
 
-
-print('The Average Uniqueness of all files is: ' +  str(100 * avg_uniqueness) + '%')
-print('The Average Reliability of all files is: ' +  str( 100 * (1 - avg_reliabilty))+ '%')
-print('The Average Uniformity of all files is: ' +  str(100 * avg_uniformity) + '%')
 print('The Average Bit-Aliasing of all files is: ' +  str(100 * avg_aliasing) + '%')
-
-

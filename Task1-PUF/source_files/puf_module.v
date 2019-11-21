@@ -108,7 +108,6 @@ module puf_module (
                     begin
                         // TODO-SRAM: change the following to select the correct byte of
                         // the rdata vector, using the LSB of i_r:
-                        raddr <= i_r >> 1;
                         if (i_r[0] == 0) begin
                             puf_byte_reg <= rdata[7:0];
                         end else begin
@@ -175,6 +174,8 @@ module puf_module (
         wmask <= 0; // meaning: write mask that allows to not write single bits, can be kept 0 when writing always 16bit values
         // ... put other memory signal defaults here
         // ???
+        raddr <= i_r >> 1;
+
         
         case (state)
             INIT :  begin

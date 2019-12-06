@@ -97,7 +97,7 @@ module aes(clk, rst, din, keyin, dout, done);
 					if (mixcolumns_done) begin
 						mixcolumns_ena <= 1'b0;
 						aes_state <= mixcolumns_out;
-						fsm_state <= KEY_SCHED;
+						fsm_state <= DONE;
 					end else begin
 						fsm_state <= MIX_COLUMNS;
 					end
@@ -116,7 +116,7 @@ module aes(clk, rst, din, keyin, dout, done);
 				KEY_ADD: begin
 					// TODO: Add the round key
 					// ???
-					
+					aes_state <= key ^ aes_state;
 									
 					// we are at the last round, go to DONE to signal completion, otherwise increment the round and go to subbytes again
 					if (round == 4'd10) begin

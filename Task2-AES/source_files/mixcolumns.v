@@ -14,99 +14,69 @@ module mixcolumns(clk, rst, ena, state_in, state_out, done);
 	
 	// TODO: Implement the MixColumns AES operation
 	// ???
-	reg[1:0] columnCount;
-	reg[1:0] byteCount;
-
+	reg[2:0] index;
+	
+	parameter INIT = 'b111, MULT = 'b001, FINISHCALC = 'b010, LOOP_CONDITION = 'b011, NOT_ENA = 'b100, WAIT = 'b101;
 	reg[2:0] state;
-	parameter NOT_ENA = 'b000, INIT = 'b001, NEXT_BYTE = 'b010, NEXT_COLUMN = 'b011, LOOP_BYTE = 'b100, LOOP_COLUMN = 'b101, DONE = 'b110;
-	reg[31:0] workingColumn;
-	reg[31:0] ColResult;
 
-	reg[7:0] xtimes1_in,xtimes1_out,xtimes2_in,xtimes2_out,xtimes3_out;
-
+	reg[7:0] xtimes1_in,xtimes1_out,xtimes2_in,xtimes2_out,xtimes3_in,xtimes3_out, xtimes4_in,xtimes4_out, a1, a2, a3, a4;
 	xtime xtimes1(.byte_in(xtimes1_in),.byte_out(xtimes1_out));
 	xtime xtimes2(.byte_in(xtimes2_in),.byte_out(xtimes2_out));
-	xtime xtimes3(.byte_in(xtimes2_out),.byte_out(xtimes3_out));
+	xtime xtimes3(.byte_in(xtimes3_in),.byte_out(xtimes3_out));
+	xtime xtimes4(.byte_in(xtimes4_in),.byte_out(xtimes4_out));
 
-
-	
-	
-
-	always@(posedge clc) begin
+	always@(posedge clk) begin
 		case (state)
 			NOT_ENA: begin
+				done <= 'b0;
 				if (ena) begin
 					state <= INIT;
 				end
 			end
 			INIT: begin
-				state_out <= 'b0;
-				columnCount <= 'b0;
-				byteCount <= 'b0;
-				done <= 'b0;
-				workingColumn <= state_in[0:31];
-				state <= NEXT_BYTE;
+				index <= 0;
+				state <= MULT;
 			end
-			NEXT_BYTE: begin
-				case (byteCount) 
-					'b00: begin
-						byteCount <= 'b01;
-						xtimes1_in <= workingColumn[7:0];
-						xtimes2_in <= workingColumn[15:8];
-						ColResult[7:0] <= xtimes1_out ^ xtimes3_out ^ workingColumn[23:16]^ workingColumn[31:24];
-					end
-					'b01: begin
-						byteCount <= 'b10;
-						xtimes1_in <= workingColumn[15:8];
-						xtimes2_in <= workingColumn[23:16];
-						ColResult[15:8] <= workingColumn[7:0] ^ xtimes1_out ^ xtimes3_out ^ workingColumn[31:24];
-					end
-					'b10: begin
-						byteCount <= 'b11;
-						xtimes1_in <= workingColumn[23:16];
-						xtimes2_in <= workingColumn[31:24];
-						ColResult[23:16] <= workingColumn[7:0] ^ workingColumn[15:8] ^ xtimes1_out ^ xtimes3_out;
-					end
-					'b11:begin
-						byteCount <='b00;
-						xtimes1_in <= workingColumn[31:24];
-						xtimes2_in <= workingColumn[7:0];
-						ColResult[31:24] <= xtimes3_out ^ workingColumn[15:8] ^ workingColumn[23:16] ^ xtimes1_out;
-						state <= NEXT_COLUMN;
-					end
-				endcase
+			MULT: begin
+				xtimes1_in <= state_in[(7 + (32 * index)):(32 * index)];
+				xtimes2_in <= state_in[(15 + (32 * index)):(8 + (32 * index))];
+				xtimes3_in <= state_in[(23 + (32 * index)):(16 + (32 * index))];
+				xtimes4_in <= state_in[(31  + (32 * index)):(24 + (32 * index))];
+
+				a1 <= state_in[(7 + (32 * index)):(32 * index)];
+				a2 <= state_in[(15 + (32 * index)):(8 + (32 * index))];
+				a3 <= state_in[(23 + (32 * index)):(16 + (32 * index))];
+				a4 <= state_in[(31  + (32 * index)):(24 + (32 * index))];
+				state <= WAIT;
 			end
-			NEXT_COLUMN: begin
-				case (columnCount) 
-					'b00: begin
-						byteCount <= 'b01;
-						state_out[31:0] <= ColResult;
-						workingColumn <= state_in[63:32];
-						state <= NEXT_BYTE;
-					end
-					'b01: begin
-						byteCount <= 'b10;
-						state_out[63:32] <= ColResult;
-						workingColumn <= state_in[95:64];
-						state <= NEXT_BYTE;
-					end
-					'b10: begin
-						byteCount <= 'b11;
-						state_out[95:64] <= ColResult;
-						workingColumn <= state_in[127:96];
-						state <= NEXT_BYTE;
-					end
-					'b11:begin
-						byteCount <='b00;
-						state_out[127:96] <= ColResult;
-						state <= DONE;
-					end
-				endcase
+			WAIT: begin
+				state <= FINISHCALC;
 			end
-			DONE: begin
-				done <= 'b1;
-				state <= NOT_ENA;
+			FINISHCALC: begin
+				state_out[(7 + (32 * index)):(32 * index)] = xtimes1_out ^ (xtimes2_out ^a2) ^ a3 ^a4; 
+				state_out[(15 + (32 * index)):(8 + (32 * index))] = a1 ^ xtimes2_out ^ (xtimes3_out ^ a3) ^a4;
+				state_out[(23 + (32 * index)):(16 + (32 * index))] = a1 ^ a2 ^ xtimes3_out ^ (xtimes4_out ^ a4);
+				state_out[(31  + (32 * index)):(24 + (32 * index))] = (xtimes1_out ^a1) ^ a2 ^ a3 ^ xtimes4_out;
+
+				// state_out[(7 + 32 * index):(32 * index)] = xtimes1_out ^ (xtimes2_out ^a2) ^ a3 ^a4; 
+				// state_out[(15 + 32 * index):(8 + 32 * index)] = a1 ^ xtimes2_out ^ (xtimes3_out ^ a3) ^a4;
+				// state_out[(23 + 32 * index):(16 + 32 * index)] = a1 ^ a2 ^ xtimes3_out ^ (xtimes4_out ^ a4);
+				// state_out[(31  + 32 * index):(24 + 32 * index)] = (xtimes1_out ^a1) ^ a2 ^ a3 ^ xtimes4_out;
+
+
+				state <= LOOP_CONDITION;
 			end
+			LOOP_CONDITION: begin
+				if (index < 4) begin 
+					index++;
+					state <= MULT;
+				end
+				else begin
+					done <= 'b1;
+					state <= NOT_ENA;
+				end
+			end
+			default: state <= NOT_ENA;
 		endcase
 	end
 

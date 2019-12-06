@@ -97,7 +97,7 @@ module aes(clk, rst, din, keyin, dout, done);
 					if (mixcolumns_done) begin
 						mixcolumns_ena <= 1'b0;
 						aes_state <= mixcolumns_out;
-						fsm_state <= DONE;
+						fsm_state <= KEY_SCHED;
 					end else begin
 						fsm_state <= MIX_COLUMNS;
 					end
@@ -108,7 +108,8 @@ module aes(clk, rst, din, keyin, dout, done);
 					if (keysched_done) begin
 						keysched_ena <= 1'b0;
 						key <= keysched_out;
-						fsm_state <= KEY_ADD;
+						aes_state <= keysched_out;
+						fsm_state <= DONE;
 					end else begin
 						fsm_state <= KEY_SCHED;
 					end

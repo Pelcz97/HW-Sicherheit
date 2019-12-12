@@ -38,17 +38,17 @@ module subbytes(clk, rst, ena, state_in, state_out, done);
 				state <= TRANSLATE;
 			end
 			TRANSLATE: begin
-				sbox_in = state_in[((index + 1) *8) -1:index * 8];
-				state = LOOP_CONDITION;
+				sbox_in <= state_in[((index + 1) *8) -1:index * 8];
+				state <= LOOP_CONDITION;
 			end
 			LOOP_CONDITION: begin
-				state_out[((index + 1) * 8)-1:index * 8] = sbox_out;
+				state_out[((index + 1) * 8)-1:index * 8] <= sbox_out;
 				if (index < endIndex) begin
 					index++;
 					state <= TRANSLATE;
 				end
 				else begin
-					done = 'b1;
+					done <= 'b1;
 					state <= NOT_ENA;
 				end
 			end

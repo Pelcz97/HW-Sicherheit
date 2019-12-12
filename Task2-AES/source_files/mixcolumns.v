@@ -53,10 +53,10 @@ module mixcolumns(clk, rst, ena, state_in, state_out, done);
 				state <= FINISHCALC;
 			end
 			FINISHCALC: begin
-				state_out[(7 + (32 * index)):(32 * index)] = xtimes1_out ^ (xtimes2_out ^a2) ^ a3 ^a4; 
-				state_out[(15 + (32 * index)):(8 + (32 * index))] = a1 ^ xtimes2_out ^ (xtimes3_out ^ a3) ^a4;
-				state_out[(23 + (32 * index)):(16 + (32 * index))] = a1 ^ a2 ^ xtimes3_out ^ (xtimes4_out ^ a4);
-				state_out[(31  + (32 * index)):(24 + (32 * index))] = (xtimes1_out ^a1) ^ a2 ^ a3 ^ xtimes4_out;
+				state_out[(7 + (32 * index)):(32 * index)] <= xtimes1_out ^ (xtimes2_out ^a2) ^ a3 ^a4; 
+				state_out[(15 + (32 * index)):(8 + (32 * index))] <= a1 ^ xtimes2_out ^ (xtimes3_out ^ a3) ^a4;
+				state_out[(23 + (32 * index)):(16 + (32 * index))] <= a1 ^ a2 ^ xtimes3_out ^ (xtimes4_out ^ a4);
+				state_out[(31  + (32 * index)):(24 + (32 * index))] <= (xtimes1_out ^a1) ^ a2 ^ a3 ^ xtimes4_out;
 
 				// state_out[(7 + 32 * index):(32 * index)] = xtimes1_out ^ (xtimes2_out ^a2) ^ a3 ^a4; 
 				// state_out[(15 + 32 * index):(8 + 32 * index)] = a1 ^ xtimes2_out ^ (xtimes3_out ^ a3) ^a4;

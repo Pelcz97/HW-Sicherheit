@@ -10,10 +10,10 @@ traces = genfromtxt('/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/e
 with open('/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv', newline='') as csvfile:
     msgs = list(csv.reader(csvfile))
 
-msgs = np.array(msgs)
+msgs = np.array(msgs, dtype=str)
 
 #Set this to the Byte you want to attack
-numByte = 0
+numByte = 1
 #Set this to 0 or 1 depending on which column of msgs you wanna use
 plainOrCipher = 0
 
@@ -24,10 +24,12 @@ k = np.arange(0,256)
 H = np.zeros((256, len(msgs)))
 
 for i in range(256):
-    msg = msgs[:,plainOrCipher]
-    H[i,:] = getSboxValue(msg ^ k[i])
+    for j in range(len(msgs)):
+        msg = msgs[j,plainOrCipher]
+        msg = msg[2*numByte:2*numByte+2]
+        msg = int(msg, 16)
+        H[i,j] = getSboxValue(msg ^ k[i])
 
-print(getSboxValue(0))
 
 print("Number of traces: ", numTraces)
 print("Trace length: ", traceLength)

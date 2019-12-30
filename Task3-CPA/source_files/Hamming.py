@@ -14,6 +14,6 @@ def HammingWeightXOR(string1, string2):
 def HammingDistance(string):
     result = 0
     for i in range(len(string)):
-        if (string[i] != '0'):
+        if (string[i] == '1'):
             result += 1
     return result

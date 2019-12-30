@@ -108,8 +108,7 @@ module aes(clk, rst, din, keyin, dout, done);
 					if (keysched_done) begin
 						keysched_ena <= 1'b0;
 						key <= keysched_out;
-						aes_state <= keysched_out;
-						fsm_state <= DONE;
+						fsm_state <= KEY_ADD;
 					end else begin
 						fsm_state <= KEY_SCHED;
 					end

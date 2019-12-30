@@ -7,7 +7,7 @@ import time
 import serial.tools.list_ports
 
 # Edit UART device if necessary
-DEV_UART = '/dev/tty.usbserial-FD1201'
+DEV_UART = '/dev/ttyUSB1'
 
 # separate memory into how many blocks
 # (in powers of 2)

@@ -6,9 +6,15 @@ import csv
 from Sbox import getSboxValue
 import matplotlib.pyplot as plt
 
-traces = genfromtxt('/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv', delimiter=',')
+PHILIPP_TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
+JANLUCA_TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
 
-with open('/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv', newline='') as csvfile:
+PHILIPP_MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'
+JANLUCA_MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
+
+traces = genfromtxt(JANLUCA_TRACES, delimiter=',')
+
+with open(JANLUCA_MSGS, newline='') as csvfile:
     msgs = list(csv.reader(csvfile))
 
 msgs = np.array(msgs, dtype=str)

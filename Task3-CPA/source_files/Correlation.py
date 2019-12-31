@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import multiprocessing as mp
 
 # Even faster correlation trace computation
 # Takes the full matrix of predictions instead of just a column
@@ -21,8 +22,14 @@ def correlationTraces(O, P):
 
     return numerator / denominator
 
+def partOfAttack():
+
 
 def attackingWithCorrelation(H, T):
+
+    pool = mp.Pool(mp.cpu_count())
+
+
     start = time.time()
 
     mean_h = np.mean(H, axis=0)
@@ -32,12 +39,13 @@ def attackingWithCorrelation(H, T):
 
     print(endMean - start)
 
-    r = np.zeros((len(T[0]), len(H[0])))
+    len_T0 = len(T[0])
+    len_H0 = len(H[0])
 
-    for i in range(len(H[0])):
-        for j in range(len(T[0])):
+    r = np.zeros((len_T0, len_H0))
 
-            # 0 oder 1?
+    for i in range(len_H0):
+        for j in range(len_T0):
             numerator = 0
             sum1 = 0
             sum2 = 0
@@ -53,6 +61,8 @@ def attackingWithCorrelation(H, T):
             denominator = np.multiply(sum1, sum2)
             denominator = np.sqrt(denominator)
             r[j][i] = np.divide(numerator, denominator)
+
+            print("Step i:{0}, j:{1}".format(i, j))
     
     end = time.time()
     print(end - start)

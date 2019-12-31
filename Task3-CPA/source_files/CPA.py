@@ -6,6 +6,8 @@ import csv
 from Sbox import getSboxValue
 import matplotlib.pyplot as plt
 import Correlation
+import multiprocessing as mp
+
 
 from sys import platform
 if platform == "linux" or platform == "linux2":
@@ -18,7 +20,7 @@ elif platform == "darwin":
     # Windows...
     
 
-
+print("Number of processors: ", mp.cpu_count())
 
 traces = genfromtxt(TRACES, delimiter=',')
 

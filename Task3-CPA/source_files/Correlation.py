@@ -23,7 +23,6 @@ def correlationTraces(O, P):
 
 
 def attackingWithCorrelation(H, T):
-
     start = time.time()
 
     mean_h = np.mean(H, axis=0)

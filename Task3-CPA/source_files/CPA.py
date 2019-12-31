@@ -38,6 +38,7 @@ for i in range(256):
         H[i,j] = getSboxValue(msg ^ k[i])
 
 HModel = H
+print(len(H))
 for i in range(len(H)):
     HModel[i] = np.array(list(map(Hamming.HammingDistanceInt, H[i])))
 

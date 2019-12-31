@@ -6,15 +6,22 @@ import csv
 from Sbox import getSboxValue
 import matplotlib.pyplot as plt
 
-PHILIPP_TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
-JANLUCA_TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
+from sys import platform
+if platform == "linux" or platform == "linux2":
+    TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
+    MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'
+elif platform == "darwin":
+    TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
+    MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
+#elif platform == "win32":
+    # Windows...
+    
 
-PHILIPP_MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'
-JANLUCA_MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
 
-traces = genfromtxt(JANLUCA_TRACES, delimiter=',')
 
-with open(JANLUCA_MSGS, newline='') as csvfile:
+traces = genfromtxt(TRACES, delimiter=',')
+
+with open(MSGS, newline='') as csvfile:
     msgs = list(csv.reader(csvfile))
 
 msgs = np.array(msgs, dtype=str)

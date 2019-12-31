@@ -11,9 +11,13 @@ def HammingWeightXOR(string1, string2):
             result.append('0')
     return HammingDistance(result) 
 
-def HammingDistance(string):
+def HammingDistanceString(string):
     result = 0
     for i in range(len(string)):
         if (string[i] == '1'):
             result += 1
     return result
+
+def HammingDistanceInt(number):
+    number = int(number)
+    return bin(number).count("1")

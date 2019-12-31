@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 # Even faster correlation trace computation
 # Takes the full matrix of predictions instead of just a column
@@ -23,30 +24,38 @@ def correlationTraces(O, P):
 
 def attackingWithCorrelation(H, T):
 
-    r = []
+    start = time.time()
+
     mean_h = np.mean(H, axis=0)
     mean_t = np.mean(T, axis=0)
 
-    for i in range(1):
-        r_j = []
-        for j in range(1):
+    endMean = time.time()
+
+    print(endMean - start)
+
+    r = np.zeros((len(T[0]), len(H[0])))
+
+    for i in range(len(H[0])):
+        for j in range(len(T[0])):
 
             # 0 oder 1?
             numerator = 0
             sum1 = 0
             sum2 = 0
-            for d in range(0, len(T)):
-                mul1 = h[d][i] - mean_h[i]
-                mul2 = t[d][j] - mean_t[j]
+            for d in range(len(T)):
+                mul1 = H[d][i] - mean_h[i]
+                mul2 = T[d][j] - mean_t[j]
                 mul = np.multiply(mul1, mul2)
                 numerator += mul
 
-                sum1 += np.square(h[d][i] - mean_h[i])
-                sum2 += np.square(t[d][j] - mean_t[j])
+                sum1 += np.square(H[d][i] - mean_h[i])
+                sum2 += np.square(T[d][j] - mean_t[j])
 
             denominator = np.multiply(sum1, sum2)
             denominator = np.sqrt(denominator)
-        r_j.append(np.divide(numerator, denominator))
-    r.append(r_j)
-
+            r[j][i] = np.divide(numerator, denominator)
+    
+    end = time.time()
+    print(end - start)
     return r
+

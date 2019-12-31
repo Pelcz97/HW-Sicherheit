@@ -51,7 +51,7 @@ for i in range(len(H)):
 
 HModel = HModel.T
 
-corrMatrix = Correlation.correlationTraces(traces, HModel)
+corrMatrix = Correlation.attackingWithCorrelation(traces, HModel)
 
 Ri = np.zeros(256)
 for i in range(len(Ri)):

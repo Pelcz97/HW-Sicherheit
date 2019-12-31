@@ -5,6 +5,7 @@ from numpy import genfromtxt
 import csv
 from Sbox import getSboxValue
 import matplotlib.pyplot as plt
+import Correlation
 
 from sys import platform
 if platform == "linux" or platform == "linux2":
@@ -37,7 +38,7 @@ traceLength= traces.shape[1]
 k = np.arange(0,256)
 H = np.zeros((256, len(msgs)))
 
-for i in range(256):
+for i in range(len(k)):
     for j in range(len(msgs)):
         msg = msgs[j,plainOrCipher]
         msg = msg[2*numByte:2*numByte+2]
@@ -45,15 +46,20 @@ for i in range(256):
         H[i,j] = getSboxValue(msg ^ k[i])
 
 HModel = H
-print(len(H))
 for i in range(len(H)):
     HModel[i] = np.array(list(map(Hamming.HammingDistanceInt, H[i])))
 
 HModel = HModel.T
-print(HModel)
 
-plt.plot(HModel)
-plt.show()
+corrMatrix = Correlation.correlationTraces(traces, HModel)
+
+Ri = np.zeros(256)
+for i in range(len(Ri)):
+    Ri[i] = max(abs(corrMatrix[i]))
+
+maxValue = max(Ri)
+
+print(maxValue)
 
 print("Number of traces: ", numTraces)
 print("Trace length: ", traceLength)

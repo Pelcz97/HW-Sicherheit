@@ -1,6 +1,29 @@
 import numpy as np
 import time
 import multiprocessing as mp
+import ctypes
+
+
+# Playground for parallel stuff
+shared_array_base = mp.Array(ctypes.c_double, 256*87)
+shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())
+shared_array = shared_array.reshape(256, 87)
+
+# Parallel processing
+def my_func(i, def_param=shared_array):
+    shared_array[i,:] = i
+
+
+pool = mp.Pool(processes=4)
+pool.map(my_func, range(256))
+
+print(shared_array)
+
+pool.close()
+
+print(results)
+
+###########################################
 
 # Even faster correlation trace computation
 # Takes the full matrix of predictions instead of just a column
@@ -22,7 +45,6 @@ def correlationTraces(O, P):
 
     return numerator / denominator
 
-def partOfAttack():
 
 
 def attackingWithCorrelation(H, T):

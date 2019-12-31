@@ -21,21 +21,32 @@ def correlationTraces(O, P):
     return numerator / denominator
 
 
-def attackingWithCorrelation(D, i , j, h):
-    # 0 oder 1?
-    numerator = 0
-    sum1 = 0
-    sum2 = 0
-    for d in range(0, D):
-        mul1 = h[d][i] - np.mean(h[i])
-        mul2 = t[d][j] - np.mean(t[j])
-        mul = np.multiply(mul1, mul2)
-        numerator += mul
+def attackingWithCorrelation(H, T):
 
-        sum1 += np.square(h[d][i] - np.mean(h[i]))
-        sum2 += np.square(t[d][j] - np.mean(t[j]))
+    r = []
+    mean_h = np.mean(H, axis=0)
+    mean_t = np.mean(T, axis=0)
 
-    denominator = np.multiply(sum1, sum2)
-    denominator = np.sqrt(denominator)
+    for i in range(1):
+        r_j = []
+        for j in range(1):
 
-    return np.divide(numerator, denominator)
+            # 0 oder 1?
+            numerator = 0
+            sum1 = 0
+            sum2 = 0
+            for d in range(0, len(T)):
+                mul1 = h[d][i] - mean_h[i]
+                mul2 = t[d][j] - mean_t[j]
+                mul = np.multiply(mul1, mul2)
+                numerator += mul
+
+                sum1 += np.square(h[d][i] - mean_h[i])
+                sum2 += np.square(t[d][j] - mean_t[j])
+
+            denominator = np.multiply(sum1, sum2)
+            denominator = np.sqrt(denominator)
+        r_j.append(np.divide(numerator, denominator))
+    r.append(r_j)
+
+    return r

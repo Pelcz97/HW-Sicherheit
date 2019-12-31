@@ -1,14 +1,14 @@
 #!/usr/bin/python3
+import Correlation
+import csv
 import Hamming
 import numpy as np
-from numpy import genfromtxt
-import csv
-from Sbox import getSboxValue
 import matplotlib.pyplot as plt
-import Correlation
-
-
+from numpy import genfromtxt
+from Sbox import getSboxValue
 from sys import platform
+
+
 if platform == "linux" or platform == "linux2":
     TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
     MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'

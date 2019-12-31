@@ -8,7 +8,6 @@ from numpy import genfromtxt
 from Sbox import getSboxValue
 from sys import platform
 
-
 if platform == "linux" or platform == "linux2":
     TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
     MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'
@@ -50,6 +49,7 @@ for i in range(len(H)):
 
 HModel = HModel.T
 
+print("HALLO")
 corrMatrix = Correlation.attackingWithCorrelation(traces, HModel)
 
 Ri = np.zeros(256)

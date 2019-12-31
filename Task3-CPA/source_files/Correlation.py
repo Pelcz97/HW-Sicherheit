@@ -5,9 +5,9 @@ import ctypes
 
 
 # Playground for parallel stuff
-shared_array_base = mp.Array(ctypes.c_double, 256*87)
-shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())
-shared_array = shared_array.reshape(256, 87)
+#shared_array_base = mp.Array(ctypes.c_double, 256*87)
+#shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())
+#shared_array = shared_array.reshape(256, 87)
 
 shared_r_base = mp.Array(ctypes.c_float, 256*87)
 shared_r = np.ctypeslib.as_array(shared_r_base.get_obj())
@@ -18,12 +18,12 @@ def my_func(i):
     shared_array[i, :] = i
 
 
-pool = mp.Pool(mp.cpu_count())
-pool.map(my_func, range(256))
+#pool = mp.Pool(mp.cpu_count())
+#pool.map(my_func, range(256))
 
-print(shared_array)
+#print(shared_array)
 
-pool.close()
+#pool.close()
 
 ###########################################
 
@@ -48,9 +48,12 @@ def correlationTraces(O, P):
     return numerator / denominator
 
 
-def rowOfAttack(i, len_T):
+def rowOfAttack(list):
+    i = list[0]
+    len_T0 = list[1]
+
     print("New Row")
-    for j in range(len_T):
+    for j in range(len_T0):
         print("row {0}, element {1}".format(i, j))
         numerator = 0
         sum1 = 0
@@ -71,7 +74,6 @@ def rowOfAttack(i, len_T):
 def attackingWithCorrelation(H, T):
 
     pool = mp.Pool(mp.cpu_count())
-    pool.map(my_func, range(256))
 
     start = time.time()
 
@@ -87,7 +89,7 @@ def attackingWithCorrelation(H, T):
 
     r = np.zeros((len_T0, len_H0))
 
-    pool.map(rowOfAttack, (range(len_H0), len_T0))
+    pool.map(rowOfAttack, [range(len_H0), len_T0])
 
     '''for i in range(len_H0):
         for j in range(len_T0):
@@ -108,7 +110,7 @@ def attackingWithCorrelation(H, T):
             r[j][i] = np.divide(numerator, denominator)
 
             print("Step i:{0}, j:{1}".format(i, j))'''
-    
+    pool.close()
     end = time.time()
     print(end - start)
     return r

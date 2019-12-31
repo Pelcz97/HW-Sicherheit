@@ -6,7 +6,6 @@ import csv
 from Sbox import getSboxValue
 import matplotlib.pyplot as plt
 import Correlation
-import multiprocessing as mp
 
 
 from sys import platform
@@ -18,9 +17,7 @@ elif platform == "darwin":
     MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
 #elif platform == "win32":
     # Windows...
-    
 
-print("Number of processors: ", mp.cpu_count())
 
 traces = genfromtxt(TRACES, delimiter=',')
 
@@ -35,17 +32,17 @@ numByte = 0
 plainOrCipher = 1
 
 numTraces = traces.shape[0]
-traceLength= traces.shape[1]
+traceLength = traces.shape[1]
 
-k = np.arange(0,256)
+k = np.arange(0, 256)
 H = np.zeros((256, len(msgs)))
 
 for i in range(len(k)):
     for j in range(len(msgs)):
-        msg = msgs[j,plainOrCipher]
+        msg = msgs[j, plainOrCipher]
         msg = msg[2*numByte:2*numByte+2]
         msg = int(msg, 16)
-        H[i,j] = getSboxValue(msg ^ k[i])
+        H[i, j] = getSboxValue(msg ^ k[i])
 
 HModel = H
 for i in range(len(H)):

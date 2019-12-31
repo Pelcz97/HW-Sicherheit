@@ -9,19 +9,21 @@ shared_array_base = mp.Array(ctypes.c_double, 256*87)
 shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())
 shared_array = shared_array.reshape(256, 87)
 
+shared_r_base = mp.Array(ctypes.c_float, 256*87)
+shared_r = np.ctypeslib.as_array(shared_r_base.get_obj())
+shared_r = shared_r.reshape(256, 87)
+
 # Parallel processing
-def my_func(i, def_param=shared_array):
-    shared_array[i,:] = i
+def my_func(i):
+    shared_array[i, :] = i
 
 
-pool = mp.Pool(processes=4)
+pool = mp.Pool(mp.cpu_count())
 pool.map(my_func, range(256))
 
 print(shared_array)
 
 pool.close()
-
-print(results)
 
 ###########################################
 
@@ -46,11 +48,30 @@ def correlationTraces(O, P):
     return numerator / denominator
 
 
+def rowOfAttack(i, len_T):
+    print("New Row")
+    for j in range(len_T):
+        print("row {0}, element {1}".format(i, j))
+        numerator = 0
+        sum1 = 0
+        sum2 = 0
+        for d in range(len(T)):
+            mul1 = H[d][i] - mean_h[i]
+            mul2 = T[d][j] - mean_t[j]
+            mul = np.multiply(mul1, mul2)
+            numerator += mul
+
+            sum1 += np.square(H[d][i] - mean_h[i])
+            sum2 += np.square(T[d][j] - mean_t[j])
+
+        denominator = np.multiply(sum1, sum2)
+        denominator = np.sqrt(denominator)
+        shared_r[j][i] = np.divide(numerator, denominator)
 
 def attackingWithCorrelation(H, T):
 
     pool = mp.Pool(mp.cpu_count())
-
+    pool.map(my_func, range(256))
 
     start = time.time()
 
@@ -66,7 +87,9 @@ def attackingWithCorrelation(H, T):
 
     r = np.zeros((len_T0, len_H0))
 
-    for i in range(len_H0):
+    pool.map(rowOfAttack, (range(len_H0), len_T0))
+
+    '''for i in range(len_H0):
         for j in range(len_T0):
             numerator = 0
             sum1 = 0
@@ -84,7 +107,7 @@ def attackingWithCorrelation(H, T):
             denominator = np.sqrt(denominator)
             r[j][i] = np.divide(numerator, denominator)
 
-            print("Step i:{0}, j:{1}".format(i, j))
+            print("Step i:{0}, j:{1}".format(i, j))'''
     
     end = time.time()
     print(end - start)

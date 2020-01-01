@@ -19,6 +19,8 @@ shared_mean_H = np.zeros(87)
 shared_mean_T = np.zeros(256)
 
 shared_len_T = 0
+shared_lenT0 = 0
+shared_lenH0 = 0
 
 # Parallel processing
 def my_func(i):
@@ -55,12 +57,10 @@ def correlationTraces(O, P):
     return numerator / denominator
 
 
-def rowOfAttack(list):
-    i = list[0]
-    len_T0 = list[1]
+def rowOfAttack(i):
 
     print("New Row")
-    for j in range(len_T0):
+    for j in range(shared_len_T0):
         print("row {0}, element {1}".format(i, j))
         numerator = 0
         sum1 = 0
@@ -83,24 +83,21 @@ def attackingWithCorrelation(H, T):
 
     shared_H = H
     shared_T = T
-    shared_len_T = len(T)
-    pool = mp.Pool(mp.cpu_count())
 
     start = time.time()
-
     shared_mean_H = np.mean(H, axis=0)
     shared_mean_T = np.mean(T, axis=0)
-
     endMean = time.time()
+
+    shared_len_T = len(T)
+    shared_lenT0 = len(T[0])
+    shared_lenT0 = len(H[0])
+
+    pool = mp.Pool(mp.cpu_count())
 
     print(endMean - start)
 
-    len_T0 = len(T[0])
-    len_H0 = len(H[0])
-
-    r = np.zeros((len_T0, len_H0))
-
-    pool.map(rowOfAttack, [range(len_H0), len_T0])
+    pool.map(rowOfAttack, range(shared_len_H0))
 
     '''for i in range(len_H0):
         for j in range(len_T0):
@@ -124,5 +121,5 @@ def attackingWithCorrelation(H, T):
     pool.close()
     end = time.time()
     print(end - start)
-    return r
+    return shared_r
 

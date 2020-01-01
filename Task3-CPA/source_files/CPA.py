@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import Correlation
 import csv
 import Hamming
 import numpy as np
@@ -7,6 +6,7 @@ import matplotlib.pyplot as plt
 from numpy import genfromtxt
 from Sbox import getSboxValue
 from sys import platform
+from Correlation import Correlation
 
 if platform == "linux" or platform == "linux2":
     TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
@@ -49,7 +49,9 @@ for i in range(len(H)):
 
 HModel = HModel.T
 
-corrMatrix = Correlation.attackingWithCorrelation(traces, HModel)
+correlationObject = Correlation(HModel,traces)
+corrMatrix = correlationObject.attackingWithCorrelation(traces, HModel)
+#corrMatrix = Correlation.attackingWithCorrelation(traces, HModel)
 
 Ri = np.zeros(256)
 for i in range(len(Ri)):

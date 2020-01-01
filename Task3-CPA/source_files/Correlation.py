@@ -11,9 +11,9 @@ class Correlation:
 #shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())
 #shared_array = shared_array.reshape(256, 87)
 
-    shared_r_base = mp.Array(ctypes.c_float, 256*87)
-    shared_r = np.ctypeslib.as_array(shared_r_base.get_obj())
-    shared_r = shared_r.reshape(256, 87)
+    # shared_r_base = mp.Array(ctypes.c_float, 256*87)
+    # shared_r = np.ctypeslib.as_array(shared_r_base.get_obj())
+    # shared_r = shared_r.reshape(256, 87)
 
 def __init__(self, H, T):
     self.H = H

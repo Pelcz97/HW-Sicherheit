@@ -13,6 +13,13 @@ shared_r_base = mp.Array(ctypes.c_float, 256*87)
 shared_r = np.ctypeslib.as_array(shared_r_base.get_obj())
 shared_r = shared_r.reshape(256, 87)
 
+shared_H = np.zeros((6000, 87))
+shared_T = np.zeros((6000, 256))
+shared_mean_H = np.zeros(87)
+shared_mean_T = np.zeros(256)
+
+shared_len_T = 0
+
 # Parallel processing
 def my_func(i):
     shared_array[i, :] = i
@@ -58,27 +65,31 @@ def rowOfAttack(list):
         numerator = 0
         sum1 = 0
         sum2 = 0
-        for d in range(len(T)):
-            mul1 = H[d][i] - mean_h[i]
-            mul2 = T[d][j] - mean_t[j]
+        for d in range(shared_len_T):
+            mul1 = shared_H[d][i] - shared_mean_H[i]
+            mul2 = shared_T[d][j] - shared_mean_T[j]
             mul = np.multiply(mul1, mul2)
             numerator += mul
 
-            sum1 += np.square(H[d][i] - mean_h[i])
-            sum2 += np.square(T[d][j] - mean_t[j])
+            sum1 += np.square(shared_H[d][i] - shared_mean_H[i])
+            sum2 += np.square(shared_T[d][j] - shared_mean_T[j])
 
         denominator = np.multiply(sum1, sum2)
         denominator = np.sqrt(denominator)
         shared_r[j][i] = np.divide(numerator, denominator)
 
+
 def attackingWithCorrelation(H, T):
 
+    shared_H = H
+    shared_T = T
+    shared_len_T = len(T)
     pool = mp.Pool(mp.cpu_count())
 
     start = time.time()
 
-    mean_h = np.mean(H, axis=0)
-    mean_t = np.mean(T, axis=0)
+    shared_mean_H = np.mean(H, axis=0)
+    shared_mean_T = np.mean(T, axis=0)
 
     endMean = time.time()
 

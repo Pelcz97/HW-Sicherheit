@@ -91,7 +91,7 @@ def attackingWithCorrelation(H, T):
 
     shared_len_T = len(T)
     shared_lenT0 = len(T[0])
-    shared_lenT0 = len(H[0])
+    shared_lenH0 = len(H[0])
 
     pool = mp.Pool(mp.cpu_count())
 

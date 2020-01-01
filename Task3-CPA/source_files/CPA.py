@@ -49,7 +49,6 @@ for i in range(len(H)):
 
 HModel = HModel.T
 
-print("HALLO")
 corrMatrix = Correlation.attackingWithCorrelation(traces, HModel)
 
 Ri = np.zeros(256)
@@ -58,7 +57,7 @@ for i in range(len(Ri)):
 
 maxValue = max(Ri)
 
-print(maxValue)
+print("Max value is: ", maxValue)
 
 print("Number of traces: ", numTraces)
 print("Trace length: ", traceLength)

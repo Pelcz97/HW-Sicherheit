@@ -60,7 +60,8 @@ def correlationTraces(O, P):
 def rowOfAttack(i):
 
     print("New Row")
-    for j in range(shared_len_T0):
+    print("Shared_LenT0: ", shared_lenT0)
+    for j in range(shared_lenT0):
         print("row {0}, element {1}".format(i, j))
         numerator = 0
         sum1 = 0
@@ -91,13 +92,14 @@ def attackingWithCorrelation(H, T):
 
     shared_len_T = len(T)
     shared_lenT0 = len(T[0])
+    print("ORIGIN T0: ", len(T[0]))
     shared_lenH0 = len(H[0])
 
     pool = mp.Pool(mp.cpu_count())
 
     print(endMean - start)
-
-    pool.map(rowOfAttack, range(shared_len_H0))
+    print("Shared len H0 ", shared_lenH0)
+    pool.map(rowOfAttack, range(shared_lenH0))
 
     '''for i in range(len_H0):
         for j in range(len_T0):

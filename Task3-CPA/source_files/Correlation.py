@@ -14,6 +14,7 @@ class Correlation:
         self.len_T = len(T)
         self.len_T0 = len(T[0])
         self.len_H0 = len(H[0])
+        self.r = np.zeros((256,87))
 
 
     # Even faster correlation trace computation
@@ -40,24 +41,24 @@ class Correlation:
     def rowOfAttack(self, i):
 
         print("New Row")
-        print("Shared_LenT0: ", len_T0)
-        for j in range(len_T0):
+        print("Shared_LenT0: ", self.len_T0)
+        for j in range(self.len_T0):
             print("row {0}, element {1}".format(i, j))
             numerator = 0
             sum1 = 0
             sum2 = 0
-            for d in range(len_T):
-                mul1 = H[d][i] - mean_h[i]
-                mul2 = T[d][j] - mean_t[j]
+            for d in range(self.len_T):
+                mul1 = self.H[d][i] - self.mean_h[i]
+                mul2 = self.T[d][j] - self.mean_t[j]
                 mul = np.multiply(mul1, mul2)
                 numerator += mul
 
-                sum1 += np.square(H[d][i] - mean_h[i])
-                sum2 += np.square(T[d][j] - mean_t[j])
+                sum1 += np.square(self.H[d][i] - self.mean_h[i])
+                sum2 += np.square(self.T[d][j] - self.mean_t[j])
 
             denominator = np.multiply(sum1, sum2)
             denominator = np.sqrt(denominator)
-            shared_r[j][i] = np.divide(numerator, denominator)
+            self.r[i][j] = np.divide(numerator, denominator)
 
 
     def attackingWithCorrelation(self, H, T):
@@ -69,8 +70,9 @@ class Correlation:
         pool = mp.Pool(mp.cpu_count())
 
         print(endMean - start)
-        print("Shared len H0 ", H)
-        pool.map(rowOfAttack, range(len_H0))
+        print("Shared len H0 ", self.len_H0)
+        print(self.len_H0)
+        pool.map(self.rowOfAttack, range(self.len_H0))
 
         '''for i in range(len_H0):
             for j in range(len_T0):
@@ -94,5 +96,5 @@ class Correlation:
         pool.close()
         end = time.time()
         print(end - start)
-        return shared_r
+        return self.r
 

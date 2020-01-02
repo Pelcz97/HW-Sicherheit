@@ -41,7 +41,7 @@ for i in range(len(k)):
         msg = msgs[j, plainOrCipher]
         msg = msg[2*numByte:2*numByte+2]
         msg = int(msg, 16)
-        H[i, j] = getSboxValue(msg ^ k[i])
+        H[i,j] = getSboxValue(msg ^ k[i])
 
 HModel = H
 for i in range(len(H)):
@@ -50,15 +50,13 @@ for i in range(len(H)):
 HModel = HModel.T
 
 correlationObject = Correlation(HModel,traces)
-corrMatrix = correlationObject.attackingWithCorrelation(traces, HModel)
-#corrMatrix = Correlation.attackingWithCorrelation(traces, HModel)
+corrMatrix = correlationObject.correlationTraces(traces, HModel)
 
-Ri = np.zeros(256)
-for i in range(len(Ri)):
-    Ri[i] = max(abs(corrMatrix[i]))
+maxValue = np.amax(np.abs(corrMatrix))
+result = np.where(np.abs(corrMatrix) == maxValue)
 
-maxValue = max(Ri)
-
+plt.plot(corrMatrix.T)
+plt.show()
 print("Max value is: ", maxValue)
 
 print("Number of traces: ", numTraces)

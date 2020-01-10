@@ -1,7 +1,7 @@
 module latticesense ( clkin, enain, valout );
 	// TODO: Change this parameter according to your needs to calibrate the sensor. A sensor value of 0 means you should decrease initlen, while
 	// a sensor value of 63 means you have to increase initlen.
-	parameter initlen = 9; 
+	parameter initlen = 11; 
 	parameter linelen = 64;
 	
 	input clkin;

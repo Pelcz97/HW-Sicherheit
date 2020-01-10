@@ -7,7 +7,7 @@ import time
 import serial.tools.list_ports
 
 # Edit UART device if necessary
-DEV_UART = '/dev/ttyUSB2'
+DEV_UART = '/dev/ttyUSB1'
 
 # Sensor trace length
 SENS_LEN = 56

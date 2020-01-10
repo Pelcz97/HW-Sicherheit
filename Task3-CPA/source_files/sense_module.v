@@ -23,7 +23,7 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 	output [6:0] sensor_dec;
 	
 	// State machine register with parameters for states for better readability
-	parameter WAIT_FOR_PLAIN=3'b000, ENCRYPT=3'b001, SEND_CIPHER=3'b010, SEND_SENSE=3'b011;
+	parameter WAIT_FOR_PLAIN=3'b000, ENCRYPT=3'b001, SEND_CIPHER=3'b010, SEND_SENSE=3'b011, STORE_DATA_IN_BRAM=3'b100, LOOP_CONDITION=3'b101;
 	reg [2:0] state;
 	
 	reg aes_rst; // Signal to reset the AES instance
@@ -83,6 +83,9 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 	latticesense sensor_inst(.clkin(clk48m), .enain(ena_sense), .valout(senseval)); // Sensor instance
 	decoder sensor_dec_inst(.clkin(clk48m), .rstin(rst), .sensein(senseval), .codedout(val_coded)); // Sensor decoder 
 	
+	wire [9:0] bramAdresse;
+
+
 	// State machine:
 	always @(posedge clk, posedge rst) begin
 		if (rst) begin
@@ -93,6 +96,7 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 			uart_data_to_tx <= 8'b0;
 			raddr <= 9'b0;
 			ena_sense <= 1'b0;
+			bramAdresse <= 0;
 		end else begin
 			case (state)
 				WAIT_FOR_PLAIN: begin
@@ -102,6 +106,7 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 						bytecount <= 11'd0;
 						state <= ENCRYPT;
 						ena_sense <= 1'b1;
+						bramAdresse <= 0;
 					end else if (uart_rx_ready) begin
 						// Byte has been received, but we didn't receive 16 bytes yet, so we add it to the input register and increment the index
 						aes_rst <= 1'b1;
@@ -115,6 +120,10 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 					end
 				end
 				ENCRYPT: begin
+					if (aes_lastround) begin
+						state <= STORE_DATA_IN_BRAM;
+						aes_rst <= 1'b0;
+					end
 					if (aes_done) begin
 						// Encryption done, continue with sending the ciphertext
 						aes_rst <= 1'b0;
@@ -123,6 +132,18 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 						// Wait until the encryption is completed
 						aes_rst <= 1'b0;
 						state <= ENCRYPT;
+					end
+				end
+				STORE_DATA_IN_BRAM: begin
+					data_to_bram <= sensor_dec;
+					waddr <= bramAdresse;
+				end
+				LOOP_CONDITION: begin
+					if (bramAdresse == 512) begin
+						state <= ENCRYPT;
+					end else begin
+						bramAdresse++;
+						state <= STORE_DATA_IN_BRAM;
 					end
 				end
 				SEND_CIPHER: begin

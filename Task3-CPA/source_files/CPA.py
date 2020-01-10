@@ -79,6 +79,7 @@ result = np.where(np.abs(corrMatrix) == maxValue)
 plt.plot(corrMatrix.T, color='gray')
 plt.plot(corrMatrix[result[0]].T, color='red')
 plt.show()
+
 print("Max value is: ", maxValue)
 
 print("Number of traces: ", numTraces)

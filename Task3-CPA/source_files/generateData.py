@@ -8,6 +8,8 @@ import serial.tools.list_ports
 import random
 import csv
 from tqdm import tqdm
+# import CPA
+from multiprocessing import Pool
 
 FILEPATH = ""
 
@@ -22,7 +24,6 @@ def generateTraceSet(number_of_traces):
         plaintext_hex = hex(plaintext_num)
         plaintext = str(plaintext_hex).replace('0x', '')
         plaintext = plaintext.zfill(32)
-        print(plaintext)
         cipher, sense = generateSingleTrace(plaintext)
 
         with open('messages.csv', mode='a+') as messages:
@@ -81,7 +82,7 @@ def generateSingleTrace(plaintext):
     ser.read(32).decode('utf8','ignore')
 
     # Send the example test string from NIST.FIPS.197
-    print("Sending plaintext...")
+    print("Sending plaintext: ", plaintext)
     #ser.write(bytes.fromhex("0123456789abcdef0123456789abcdef"))
     ser.write(bytes.fromhex(plaintext))
 
@@ -104,4 +105,7 @@ def generateSingleTrace(plaintext):
 
     return cipherstring, sense
 
-generateTraceSet(10)
+generateTraceSet(30000)
+
+# with Pool(processes=8) as pool:
+#     pool.map(CPA.CPA, range(8))

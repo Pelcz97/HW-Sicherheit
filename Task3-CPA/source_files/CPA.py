@@ -13,6 +13,7 @@ import binascii
 import time
 import multiprocessing as mp
 import itertools
+import tqdm
 
 def CPA(indices):
     if platform == "linux" or platform == "linux2":
@@ -88,12 +89,15 @@ def CPA(indices):
 
 
     filename = str(numByte) + "_" + str(numBit)
+    figureNumber = numByte*8 + numBit
+    plt.figure(figureNumber)
     plt.plot(corrMatrix.T, color='gray')
     plt.plot(corrMatrix[result[0]].T, color='red')
-    title = "BYTE_BIT: " + filename + "KEYHYP: " + str(result[0]) + "TRACE MOMENT: " + str(result[1])
+    title = "BYTE_BIT: " + filename + " KEYHYP: " + str(result[0]) + " TRACE MOMENT: " + str(result[1]) + " Max CorrValue: " + str(maxValue)
     plt.title(title)
     filename = filename + ".png"
     plt.savefig(filename, dpi=300)
+    plt.close(figureNumber)
 
     print("------------------------------------------")
     print("Byte number is: ", numByte)
@@ -112,6 +116,9 @@ a = range(16)
 b = range(8)
 
 allCombinations = list(itertools.product(a,b))
+
+# for elem in tqdm.tqdm(allCombinations):
+#     CPA(elem)
 
 with mp.Pool(processes=8) as pool:
     pool.map(CPA, allCombinations)

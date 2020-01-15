@@ -19,10 +19,14 @@ class Correlation:
         (n, t) = T.shape  # n traces of t samples
         (n_bis, m) = P.shape  # n predictions for each of m candidates
 
+        # ab->b berechnet die Summe innerhalb jeder Spalte, 
+        # anschließend dividiert durch Anzahl an Elementen liefert Mittelwert.
+        # DT & DP bilden damit im Produkt den Zähler
         DT = T - (np.einsum("nt->t", T, dtype='float64', optimize='optimal') / np.double(n))  # T - mean(T)
         DP = P - (np.einsum("nm->m", P, dtype='float64', optimize='optimal') / np.double(n))  # P - mean(P)
-
         numerator = np.einsum("nm,nt->mt", DP, DT, optimize='optimal')
+
+        # ab,ab->b quadriert alle Einträge und bildet anschließend die Summe innerhalb jeder Spalte
         tmp1 = np.einsum("nm,nm->m", DP, DP, optimize='optimal')
         tmp2 = np.einsum("nt,nt->t", DT, DT, optimize='optimal')
         tmp = np.einsum("m,t->mt", tmp1, tmp2, optimize='optimal')

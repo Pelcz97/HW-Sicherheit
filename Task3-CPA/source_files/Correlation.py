@@ -16,8 +16,8 @@ class Correlation:
     # P - (n,m) Array mit n Predictions für jeden der m Kandidaten
     # Rückgabe: Korrelationsmatrix (m,t) für alle Schlüsselkandidaten & Samples
     def correlationTraces(self, T, P):
-        (n, t) = T.shape  # n traces of t samples
-        (n_bis, m) = P.shape  # n predictions for each of m candidates
+        (n, t) = T.shape  # n Traces mit t Samples
+        (n_bis, m) = P.shape  # n Predictions, m Schlüsselkandidaten
 
         # ab->b berechnet die Summe innerhalb jeder Spalte, 
         # anschließend dividiert durch Anzahl an Elementen liefert Mittelwert.

@@ -17,8 +17,8 @@ import tqdm
 
 def CPA(indices):
     if platform == "linux" or platform == "linux2":
-        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/traces.csv'
-        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/messages.csv'
+        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
+        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'
     elif platform == "darwin":
         TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
         MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
@@ -38,11 +38,11 @@ def CPA(indices):
     decipher = AES.new(key, AES.MODE_ECB)
     ciphertexts = []
 
-    # for i in range(len(msgs)):
-    #     text = cipher.encrypt(binascii.unhexlify(msgs[i][1]))
-    #     a = binascii.hexlify(text).lower()
-    #     a = a.decode("utf-8")
-    #     msgs[i].append(a)
+    for i in range(len(msgs)):
+        text = cipher.encrypt(binascii.unhexlify(msgs[i][1]))
+        a = binascii.hexlify(text).lower()
+        a = a.decode("utf-8")
+        msgs[i].append(a)
 
 
 

@@ -42,6 +42,7 @@ time.sleep(0.001);
 ser.setRTS(True);
 time.sleep(0.001);
 
+#This CodeLine takes 1 Second. This is more than 99% of this scripts duration!
 # consume any bytes up to 32 left on the UART buffer:
 ser.read(32).decode('utf8','ignore')
 

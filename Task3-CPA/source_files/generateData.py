@@ -16,7 +16,7 @@ FILEPATH = ""
 KEY = "2b7e151628aed2a6abf7158809cf4f3c"
 
 # Edit UART device if necessary
-DEV_UART = '/dev/tty.usbserial-FD1201'
+DEV_UART = '/dev/ttyUSB1'
 
 BAUD_RATE=1000000
 
@@ -92,7 +92,7 @@ def generateSingleTrace(plaintext):
         print("Received ciphertext: " + cipher.hex())        
     else:
         print("Error receiving ciphertext!")
-        print("Received: " + c)
+        print("Received: " + cipher.hex())
         
     if (len(sense) == 56):
         print("Received 56 bytes of sensor values:\n" + str(list(map(int, sense))))
@@ -104,7 +104,9 @@ def generateSingleTrace(plaintext):
 
     return cipherstring, sense
 
-generateTraceSet(30000)
+
+
+generateTraceSet(100000)
 
 # with Pool(processes=8) as pool:
 #     pool.map(CPA.CPA, range(8))

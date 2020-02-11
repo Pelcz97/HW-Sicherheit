@@ -17,8 +17,8 @@ import tqdm
 
 def CPA(indices):
     if platform == "linux" or platform == "linux2":
-        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/traces.csv'
-        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/messages.csv'
+        TRACES = '/home/vettel_uwfvt/Documents/HW-Sicherheit/Task3-CPA/source_files/thresholds_9.csv'
+        MSGS = '/home/vettel_uwfvt/Documents/HW-Sicherheit/Task3-CPA/source_files/messages.csv'
     elif platform == "darwin":
         TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
         MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'

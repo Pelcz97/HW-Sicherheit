@@ -13,9 +13,46 @@ from multiprocessing import Pool
 
 FILEPATH = ""
 
-
-
 KEY = "2b7e151628aed2a6abf7158809cf4f3c"
+
+# Edit UART device if necessary
+DEV_UART = '/dev/ttyUSB1'
+
+BAUD_RATE=1000000
+
+# Sensor trace length
+SENS_LEN = 56
+
+ser = serial.Serial(
+    port=DEV_UART,
+    baudrate=BAUD_RATE,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+    timeout=1
+)
+
+# in windows:
+if ('-win') in sys.argv:
+    # BASEPATH='C:/Users/Xiang/Documents/git/iot-security/'
+    plist = list(serial.tools.list_ports.comports())
+
+    if len(plist) <= 0:
+        print("The Serial port can't be found!")
+    else:
+        plist_0 = list(plist[1])
+        DEV_UART = plist_0[0]
+
+# if you connect the reset signal in LatticeiCE40HX8K.pcf
+# (with set_io RST B13), then you can reset the FPGA like this:
+time.sleep(0.001)
+ser.setRTS(False)
+time.sleep(0.001)
+ser.setRTS(True)
+time.sleep(0.001)
+
+# consume any bytes up to 32 left on the UART buffer:
+ser.read(32).decode('utf8','ignore')
 
 def generateTraceSet(number_of_traces):
 
@@ -41,45 +78,7 @@ def generateTraceSet(number_of_traces):
 
 def generateSingleTrace(plaintext):
 
-    # Edit UART device if necessary
-    DEV_UART = '/dev/ttyUSB1'
 
-    BAUD_RATE=1000000
-
-    # Sensor trace length
-    SENS_LEN = 56
-
-    # in windows:
-    if ('-win') in sys.argv:
-        # BASEPATH='C:/Users/Xiang/Documents/git/iot-security/'
-        plist = list(serial.tools.list_ports.comports())
-
-        if len(plist) <= 0:
-            print("The Serial port can't be found!")
-        else:
-            plist_0 = list(plist[1])
-            DEV_UART = plist_0[0]
-
-
-    ser = serial.Serial(
-        port=DEV_UART,
-        baudrate=BAUD_RATE,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=1
-    )
-
-    # if you connect the reset signal in LatticeiCE40HX8K.pcf
-    # (with set_io RST B13), then you can reset the FPGA like this:
-    time.sleep(0.001)
-    ser.setRTS(False)
-    time.sleep(0.001)
-    ser.setRTS(True)
-    time.sleep(0.001)
-
-    # consume any bytes up to 32 left on the UART buffer:
-    ser.read(32).decode('utf8','ignore')
 
     # Send the example test string from NIST.FIPS.197
     print("Sending plaintext: ", plaintext)
@@ -93,7 +92,7 @@ def generateSingleTrace(plaintext):
         print("Received ciphertext: " + cipher.hex())        
     else:
         print("Error receiving ciphertext!")
-        print("Received: " + c)
+        print("Received: " + cipher.hex())
         
     if (len(sense) == 56):
         print("Received 56 bytes of sensor values:\n" + str(list(map(int, sense))))
@@ -105,7 +104,9 @@ def generateSingleTrace(plaintext):
 
     return cipherstring, sense
 
-generateTraceSet(30000)
+
+
+generateTraceSet(100000)
 
 # with Pool(processes=8) as pool:
 #     pool.map(CPA.CPA, range(8))

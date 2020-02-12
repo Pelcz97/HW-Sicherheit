@@ -32,5 +32,5 @@ class Correlation:
         tmp = np.einsum("m,t->mt", tmp1, tmp2, optimize='optimal')
         denominator = np.sqrt(tmp)
 
-        return numerator / denominator
+        return np.divide(numerator, denominator, out=np.zeros_like(numerator), where=denominator!=0)
 

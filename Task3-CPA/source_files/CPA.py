@@ -15,15 +15,22 @@ import multiprocessing as mp
 import itertools
 import tqdm
 
+def findLasRoundKeyByte(numByte):
+    lastRoundkey = 'd014f9a8c9ee2589e13f0cc8b6630ca6'
+    return lastRoundkey[2*numByte:2*numByte+2]
+
+
+
 def CPA(indices):
     if platform == "linux" or platform == "linux2":
-        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_traces.csv'
-        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/example_traces/test_msgs.csv'
+        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/24/traces.csv'
+        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/24/messages.csv'
     elif platform == "darwin":
         TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
         MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
     #elif platform == "win32":
         # Windows...
+
 
 
     traces = genfromtxt(TRACES, delimiter=',')
@@ -92,11 +99,14 @@ def CPA(indices):
     figureNumber = numByte*8 + numBit
     plt.figure(figureNumber)
     plt.plot(corrMatrix.T, color='gray')
-    plt.plot(corrMatrix[result[0]].T, color='red')
+    correctByte = findLasRoundKeyByte(numByte)
+    correctByte = int(correctByte, 16)
+    print(correctByte)
+    plt.plot(corrMatrix[correctByte].T, color='red')
     title = "BYTE_BIT: " + filename + " KEYHYP: " + str(result[0]) + " TRACE MOMENT: " + str(result[1]) + " Max CorrValue: " + str(maxValue)
     plt.title(title)
     filename = filename + ".png"
-    plt.savefig(filename, dpi=300)
+    plt.savefig(filename, dpi=100)
     plt.close(figureNumber)
 
     print("------------------------------------------")

@@ -23,7 +23,7 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 	output [6:0] sensor_dec;
 	
 	// State machine register with parameters for states for better readability
-	parameter WAIT_FOR_PLAIN=3'b000, ENCRYPT=3'b001, SEND_CIPHER=3'b010, SEND_SENSE=3'b011, STORE_DATA_IN_BRAM=3'b100, LOOP_CONDITION=3'b101;
+	parameter WAIT_FOR_PLAIN=3'b000, ENCRYPT=3'b001, SEND_CIPHER=3'b010, SEND_SENSE=3'b011, STORE_DATA_IN_BRAM=3'b100, LOOP_CONDITION=3'b101, WRITE_ENABLE=3'b110;
 	reg [2:0] state;
 	
 	reg aes_rst; // Signal to reset the AES instance
@@ -120,10 +120,6 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 					end
 				end
 				ENCRYPT: begin
-					if (aes_lastround) begin
-						state <= STORE_DATA_IN_BRAM;
-						aes_rst <= 1'b0;
-					end
 					if (aes_done) begin
 						// Encryption done, continue with sending the ciphertext
 						aes_rst <= 1'b0;
@@ -131,14 +127,25 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 					end else begin
 						// Wait until the encryption is completed
 						aes_rst <= 1'b0;
-						state <= ENCRYPT;
+						if (aes_lastround) begin
+							state <= STORE_DATA_IN_BRAM;
+						end
+						else begin 
+							state <= ENCRYPT;
+						end
 					end
 				end
 				STORE_DATA_IN_BRAM: begin
-					data_to_bram <= sensor_dec;
+					data_to_bram <= val_coded;
 					waddr <= bramAdresse;
+					state <= WRITE_ENABLE;
+				end
+				WRITE_ENABLE: begin
+					we <= 1;
+					state <= LOOP_CONDITION;
 				end
 				LOOP_CONDITION: begin
+					we <= 0;
 					if (bramAdresse == 512) begin
 						state <= ENCRYPT;
 					end else begin

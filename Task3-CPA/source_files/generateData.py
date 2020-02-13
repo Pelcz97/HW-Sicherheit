@@ -63,12 +63,12 @@ def generateTraceSet(number_of_traces):
         plaintext = plaintext.zfill(32)
         cipher, sense = generateSingleTrace(plaintext)
 
-        with open('messages.csv', mode='a+') as messages:
+        with open('/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/48/messages.csv', mode='a+') as messages:
             messages_writer = csv.writer(messages, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
             messages_writer.writerow([KEY, plaintext, cipher])
 
-        with open('traces.csv', mode='a+') as traces:
+        with open('/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/48/traces.csv', mode='a+') as traces:
             traces_writer = csv.writer(traces, delimiter=';', quoting=csv.QUOTE_NONE)
             senseText = str(list(map(int, sense)))
             print(senseText)

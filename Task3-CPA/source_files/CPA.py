@@ -23,8 +23,8 @@ def findLasRoundKeyByte(numByte):
 
 def CPA(indices):
     if platform == "linux" or platform == "linux2":
-        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/24/traces.csv'
-        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/24/messages.csv'
+        TRACES = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/36/Threshholds/traces_7.csv'
+        MSGS = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/36/messages.csv'
     elif platform == "darwin":
         TRACES = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_traces.csv'
         MSGS = '/Users/janlucavettel/Documents/FPGA/HW-Sicherheit/Task3-CPA/example_traces/test_msgs.csv'
@@ -106,6 +106,7 @@ def CPA(indices):
     title = "BYTE_BIT: " + filename + " KEYHYP: " + str(result[0]) + " TRACE MOMENT: " + str(result[1]) + " Max CorrValue: " + str(maxValue)
     plt.title(title)
     filename = filename + ".png"
+    exportpath = '/home/philipp/workspace/hw-security-course-ws19/Task3-CPA/source_files/48/Threshholds/CorrelationImages35/' + filename
     plt.savefig(filename, dpi=100)
     plt.close(figureNumber)
 

@@ -23,7 +23,7 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 	output [6:0] sensor_dec;
 	
 	// State machine register with parameters for states for better readability
-	parameter WAIT_FOR_PLAIN=3'b000, ENCRYPT=3'b001, SEND_CIPHER=3'b010, SEND_SENSE=3'b011, STORE_DATA_IN_BRAM=3'b100, LOOP_CONDITION=3'b101, WRITE_ENABLE=3'b110;
+	parameter WAIT_FOR_PLAIN=3'b000, ENCRYPT=3'b001, SEND_CIPHER=3'b010, SEND_SENSE=3'b011;
 	reg [2:0] state;
 	
 	reg aes_rst; // Signal to reset the AES instance
@@ -82,11 +82,8 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 	reg ena_sense; // Sensor enable register, must not be constant
 	latticesense sensor_inst(.clkin(clk48m), .enain(ena_sense), .valout(senseval)); // Sensor instance
 	decoder sensor_dec_inst(.clkin(clk48m), .rstin(rst), .sensein(senseval), .codedout(val_coded)); // Sensor decoder 
-	
-	wire [9:0] bramAdresse;
 
-
-	// State machine:
+    // State machine:
 	always @(posedge clk, posedge rst) begin
 		if (rst) begin
 			state <= WAIT_FOR_PLAIN;
@@ -95,8 +92,6 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 			uart_tx_enable <= 1'b0;
 			uart_data_to_tx <= 8'b0;
 			raddr <= 9'b0;
-			ena_sense <= 1'b0;
-			bramAdresse <= 0;
 		end else begin
 			case (state)
 				WAIT_FOR_PLAIN: begin
@@ -105,8 +100,6 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 						aes_rst <= 1'b0;
 						bytecount <= 11'd0;
 						state <= ENCRYPT;
-						ena_sense <= 1'b1;
-						bramAdresse <= 0;
 					end else if (uart_rx_ready) begin
 						// Byte has been received, but we didn't receive 16 bytes yet, so we add it to the input register and increment the index
 						aes_rst <= 1'b1;
@@ -127,30 +120,7 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 					end else begin
 						// Wait until the encryption is completed
 						aes_rst <= 1'b0;
-						if (aes_lastround) begin
-							state <= STORE_DATA_IN_BRAM;
-						end
-						else begin 
-							state <= ENCRYPT;
-						end
-					end
-				end
-				STORE_DATA_IN_BRAM: begin
-					data_to_bram <= val_coded;
-					waddr <= bramAdresse;
-					state <= WRITE_ENABLE;
-				end
-				WRITE_ENABLE: begin
-					we <= 1;
-					state <= LOOP_CONDITION;
-				end
-				LOOP_CONDITION: begin
-					we <= 0;
-					if (bramAdresse == 512) begin
 						state <= ENCRYPT;
-					end else begin
-						bramAdresse++;
-						state <= STORE_DATA_IN_BRAM;
 					end
 				end
 				SEND_CIPHER: begin
@@ -206,6 +176,37 @@ module sense_module(clk, rst, uart_rx_ready, uart_data_from_rx, uart_tx_ready, u
 			endcase
 		end
 	end
+
+    always @(posedge clk48m, posedge rst) begin
+		if (rst) begin
+			waddr <= 9'b111111111;
+			ena_sense <= 1'b0;
+            data_to_bram <= 8'b0;
+		end else begin
+            case (state)
+                WAIT_FOR_PLAIN: begin
+                    waddr <= 9'b111111111;
+                    ena_sense <= 1'b0;
+                    data_to_bram[6:0] <= 7'b0;
+                end
+                ENCRYPT: begin
+                    ena_sense <= 1'b1;
+                    if (aes_done) begin
+                        we <= 1'b0;
+						ena_sense <= 1'b0;
+                    end
+			        if (aes_lastround) begin
+				        data_to_bram[6:0] <= val_coded;
+				        waddr <= waddr + 1'b1;
+				        we <= 1'b1;
+                    end
+			    end
+                default: begin
+                    // do nothing here
+                end
+			endcase
+		end
+    end
 endmodule
 
 
